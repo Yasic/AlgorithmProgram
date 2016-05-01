@@ -1,11 +1,9 @@
 package Search;
 
 import edu.princeton.cs.introcs.StdOut;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
-import jdk.internal.org.xml.sax.SAXException;
-import sun.net.www.ParseUtil;
 
-import java.security.Key;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Yasic on 2016/4/28.
@@ -190,12 +188,77 @@ public class BinarySearchTree {
         else return getSize(node.left);
     }
 
+    public static void deleteMin(){
+        root = deleteMin(root);
+    }
+
+    private static Node deleteMin(Node node){
+        if (node.left == null){
+            return node.right;
+        }
+        node.left = deleteMin(node.left);
+        node.total = getSize(node.left) + getSize(node.right) + 1;
+        return node;
+    }
+
+    public static void delete(int key) {
+        root = delete(root, key);
+    }
+
+    private static Node delete(Node node, int key){
+        if (node == null){
+            return null;
+        }
+        if (node.key < key){
+            node.right = delete(node.right, key);
+        }
+        else if (node.key > key){
+            node.left = delete(node.left, key);
+        }
+        else {
+            if (node.right == null){
+                return node.left;
+            }
+            if (node.left == null){
+                return node.right;
+            }
+            Node t = node;
+            node = getMin(node.right);
+            node.right = deleteMin(node.right);
+            node.left = t.left;
+        }
+        node.total = getSize(node.left) + getSize(node.right) + 1;
+        return node;
+    }
+
+    public static List<Integer> getKeys(int lo, int hi){
+        List<Integer> integerList = new ArrayList<>();
+        getKeys(root, lo, hi, integerList);
+        for (int i = 0; i < integerList.size(); i++){
+            StdOut.print(integerList.get(i) + "\t");
+        }
+        return integerList;
+    }
+
+    private static void getKeys(Node node, int lo, int hi, List<Integer> integerList){
+        if (node == null) return;
+        if (lo < node.key){
+            getKeys(node.left, lo, hi, integerList);
+        }
+        if (hi > node.key){
+            getKeys(node.right, lo, hi, integerList);
+        }
+        if (lo <= node.key && hi >= node.key){
+            integerList.add(node.key);
+        }
+    }
+
     public static void main(String[] arg){
         root = new Node(0, "", 0);
         for (int i = 0; i < SIZE; i++){
             putNode(i, i + "");
         }
         StdOut.print(getSize()+"\n");
-        StdOut.print(select(10));
+
     }
 }
