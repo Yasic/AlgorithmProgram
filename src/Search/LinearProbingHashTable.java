@@ -6,74 +6,69 @@ import edu.princeton.cs.introcs.StdOut;
  * Created by Yasic on 2016/5/1.
  */
 public class LinearProbingHashTable {
-    private int N;
-    private static int M;
-    private static int SIZE = 10;
-    private SequentialSearchST[] sequentialSearchST;
-
+    private static int M = 16;
+    private static int TOTAL;
+    private static int[] keys, vals;
     public LinearProbingHashTable(){
-        this(997);
+        keys = new int[M];
+        vals = new int[M];
     }
 
-    public LinearProbingHashTable(int M){
-        this.M = M;
-        sequentialSearchST = new SequentialSearchST[M];
-        for (int i = 0; i < M; i++){
-            sequentialSearchST[i] = new SequentialSearchST();
-        }
+    public LinearProbingHashTable(int cap){
+        keys = new int[M];
+        vals = new int[M];
+        this.M = cap;
     }
 
     private static int getHash(Integer key){
         return (key.hashCode() & 0x7fffffff) % M;
     }
 
-    public String get(int key){
-        return sequentialSearchST[getHash(key)].get(key);
+    private static void resize(int cap){
+        LinearProbingHashTable linearProbingHashTable;
+        linearProbingHashTable = new LinearProbingHashTable(cap);
+        for (int i = 0; i < M; i++){
+            if (keys[i] != 0){
+                linearProbingHashTable.put(keys[i], vals[i]);
+            }
+        }
+        keys = linearProbingHashTable.keys;
+        vals = linearProbingHashTable.vals;
+        M = linearProbingHashTable.M;
     }
 
-    public void put(int key, String val){
-        StdOut.print(getHash(key) + "\t");
-        sequentialSearchST[getHash(key)].put(key, val);
+    public static void put(int key, int val){
+        if (TOTAL >= M/2){
+            //resize(2 * M);
+        }
+        int temp;
+        for (temp = getHash(key); keys[temp] != 0; temp = (temp + 1) % M){
+            if (keys[temp] == key){
+                vals[temp] = val;
+                return;
+            }
+        }
+        keys[temp] = key;
+        vals[temp] = val;
+        TOTAL++;
+    }
+
+    public static int get(int key){
+        for (int i = getHash(key); keys[i] != 0; i = (i + 1) % M){
+            if (keys[i] == key){
+                return vals[i];
+            }
+        }
+        return -1;
     }
 
     public static void main(String[] args){
-        LinearProbingHashTable test = new LinearProbingHashTable();
-        for (int i = 0; i < SIZE; i++){
-            test.put(i, i + ":" + i);
+        int SIZE = 10;
+        LinearProbingHashTable linearProbingHashTable = new LinearProbingHashTable();
+        for (int i = 1; i <= SIZE; i++){
+            linearProbingHashTable.put(i, i);
         }
-        StdOut.print("\n" + test.get(6) + "\t");
-    }
-
-    public static class SequentialSearchST{
-        private Node first;
-        private class Node{
-            int key;
-            String val;
-            Node next;
-            public Node(int key, String val, Node next){
-                this.key = key;
-                this.val = val;
-                this.next = next;
-            }
-        }
-
-        public String get(int key){
-            for (Node node = first; node != null; node = node.next){
-                if (key == node.key){
-                    return node.val;
-                }
-            }
-            return null;
-        }
-
-        public void put(int key, String val){
-            for (Node node = first; node != null; node = node.next){
-                if (key == node.key){
-                    node.val = val;
-                    return;
-                }
-            }
-            first = new Node(key, val, first);
-        }
+        StdOut.print("\n" + linearProbingHashTable.get(6) + "\t");
+        StdOut.print("polygenelubricants".hashCode());
     }
 }
