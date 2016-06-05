@@ -16,7 +16,7 @@ public class TwoEggsProblem {
 
         int j;
         for(j = 1; j <= floor; solutions[1][j] = j++) {
-            ;
+            solutions[1][j] = 1;
         }
 
         for(i = 2; i <= egg; ++i) {

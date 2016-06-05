@@ -11,20 +11,23 @@ public class DepthFirstPaths {
     private boolean[] marked;
     private int[] edgeTo;
     private int s;
+    private Graph graph;
+    private int count;
 
     public DepthFirstPaths(Graph graph, int s){
         marked = new boolean[graph.getV()];
         edgeTo = new int[graph.getV()];
         this.s = s;
-        dfs(graph, s);
+        this.graph = graph;
     }
 
-    private void dfs(Graph graph, int v){
+    private void dfs(int v){
         marked[v] = true;
+        count++;
         for (int w = 0; w < graph.getAdj(v).size(); w++){
             if (!marked[(Integer) graph.getAdj(v).get(w)]){
                 edgeTo[(Integer) graph.getAdj(v).get(w)] = v;
-                dfs(graph, (Integer) graph.getAdj(v).get(w));
+                dfs((Integer) graph.getAdj(v).get(w));
             }
         }
     }
@@ -45,6 +48,10 @@ public class DepthFirstPaths {
         }
     }
 
+    public int getCount(){
+        return count;
+    }
+
     public static void main(String[] args){
         Graph graph = new Graph(5);
         graph.addEdge(0,1);
@@ -53,6 +60,7 @@ public class DepthFirstPaths {
         graph.addEdge(3,4);
         graph.addEdge(0,4);
         DepthFirstPaths depthFirstPaths = new DepthFirstPaths(graph, 1);
-        depthFirstPaths.pathTo(0);
+        //depthFirstPaths.pathTo(0);
+        depthFirstPaths.dfs(1);
     }
 }
